@@ -25,8 +25,14 @@
 import Foundation
 import UIKit
 
+public protocol CHIOTPFieldDelegate: class {
+    func didChangeText(_ text: String)
+}
+
 @IBDesignable
 open class CHIOTPField<Label: POTPLabel>: UITextField, UITextFieldDelegate {
+    
+    public var textFieldDelegate: CHIOTPFieldDelegate?
 
     @IBInspectable
     public var numberOfDigits: Int = 4 {
@@ -140,6 +146,7 @@ open class CHIOTPField<Label: POTPLabel>: UITextField, UITextFieldDelegate {
             text.removeLast()
             self.text = text
             updateFocus()
+            textFieldDelegate?.didChangeText(text)
             return false
         }
 
@@ -152,6 +159,7 @@ open class CHIOTPField<Label: POTPLabel>: UITextField, UITextFieldDelegate {
 
     @objc private func textChanged() {
         guard let text = text, text.count <= numberOfDigits else { return }
+        textFieldDelegate?.didChangeText(text)
 
         labels.enumerated().forEach({ (i, label) in
 
